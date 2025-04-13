@@ -9,6 +9,8 @@ stages:
       maintainer: self-maintained # Optionally, Replace this with your name
     args:
       DEBIAN_FRONTEND: noninteractive # Set the image environment as non-interactive
+      ZSH: /etc/skel/.zsh # Set the Oh-my-zsh directory
+      ZDOTDIR: /etc/skel # Set the default zshrc directory
 
     # Commands to run first before building the modules
     runs:
@@ -67,20 +69,15 @@ stages:
           packages:
             - zoxide
             - fzf
-      - name: zoxide-config
-        type: shell
-        commands:
-          - echo 'eval "$(zoxide init zsh)"' >> /etc/zsh/zshrc
       - name: bun-install
         type: shell
         commands:
           - curl -fsSL https://github.com/oven-sh/bun/releases/latest/download/bun-linux-x64.zip -o /tmp/bun.zip
-          - unzip /tmp/bun.zip
+          - unzip /tmp/bun.zip -d /tmp
           - mv /tmp/bun-linux-x64/bun /usr/local/bin/bun
           - rm /tmp/bun.zip
           - rm -rf /tmp/bun-linux-x64
           - chmod +x /usr/local/bin/bun
-          - echo 'export PATH=$PATH:/usr/local/bin' >> /etc/zsh/zshrc
       - name: flatpak-apps-install
         type: flatpak
         system:
@@ -109,7 +106,13 @@ stages:
         type: shell
         commands:
           - curl -s https://raw.githubusercontent.com/89luca89/distrobox/main/install | sh -s -- --next
-
+      - name: config-zsh
+        type: shell
+        commands:
+          - curl -s https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh | sh -s -- --unattended
+          - echo 'export PATH=$PATH:/usr/local/bin' >> /etc/skel/.zshrc
+          - echo 'eval "$(zoxide init zsh)"' >> /etc/skel/.zshrc
+          - echo 'eval "$(chezmoi init --apply)"' >> /etc/skel/.zshrc
       # - name: example-commands # Sample module demonstrating the Shell module with custom commands
       #   type: shell
       #   commands:

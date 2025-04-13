@@ -75,13 +75,12 @@ stages:
         type: shell
         commands:
           - curl -fsSL https://github.com/oven-sh/bun/releases/latest/download/bun-linux-x64.zip -o /tmp/bun.zip
-          - unzip /tmp/bun.zip -d /usr/local/bin
+          - unzip /tmp/bun.zip
+          - mv /tmp/bun-linux-x64/bun /usr/local/bin/bun
           - rm /tmp/bun.zip
+          - rm -rf /tmp/bun-linux-x64
           - chmod +x /usr/local/bin/bun
-      - name: bun-config
-        type: shell
-        commands:
-          - echo 'export PATH="$HOME/.bun/bin:$PATH"' >> /etc/zsh/zshrc
+          - echo 'export PATH=$PATH:/usr/local/bin' >> /etc/zsh/zshrc
       - name: flatpak-apps-install
         type: flatpak
         system:

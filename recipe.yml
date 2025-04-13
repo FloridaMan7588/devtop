@@ -44,6 +44,9 @@ stages:
             - openjdk-17-jre
             - openjdk-17-jdk
             - gnome-tweaks
+            - unzip
+            - xz-utils
+            - p7zip
         options:
           noRecommends: true
           installSuggests: true
@@ -57,7 +60,7 @@ stages:
       - name: chezmoi-install
         type: shell
         commands:
-          - curl -fSsL https://get.chezmoi.io | sh -- -b /usr/local/bin
+          - sh -c "$(curl -fsLS get.chezmoi.io)" -- -b /usr/local/bin
       - name: zoxide-install
         type: apt
         source:
@@ -71,7 +74,10 @@ stages:
       - name: bun-install
         type: shell
         commands:
-          - curl -fsSL https://bun.sh/install | bash
+          - curl -fsSL https://github.com/oven-sh/bun/releases/latest/download/bun-linux-x64.zip -o /tmp/bun.zip
+          - unzip /tmp/bun.zip -d /usr/local/bin
+          - rm /tmp/bun.zip
+          - chmod +x /usr/local/bin/bun
       - name: bun-config
         type: shell
         commands:
